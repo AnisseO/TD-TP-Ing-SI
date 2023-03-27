@@ -1,0 +1,9 @@
+BD orienté graphe: Traitement de l'info
+BD clé-valeur: cache BD, stocker agrégats
+BD orienté document: stockage données peu orga, stockage d'une grosse base
+BD orienté recherche: moteur recherche
+---------------------------------------
+
+Pts positifs:
+
+Pts négatifs:

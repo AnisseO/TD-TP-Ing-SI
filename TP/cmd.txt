@@ -1,0 +1,87 @@
+.mode csv;
+.import Article.csv Article;
+.import Journaliste.csv Journaliste;
+.import Auteur.csv Auteur;
+
+
+select * from Article LIMIT 10;
+select * from Journaliste LIMIT 10;
+select * from Auteur LIMIT 10;
+
+insert into Journaliste (prenom, nom) VALUES ('Anisse', 'O');
+select * FROM Journaliste WHERE nom='O';
+
+
+SELECT COUNT(a.id_article), j.prenom, j.nom FROM Auteur a JOIN Journaliste j ON a.id_journaliste=j.id_journalist GROUP BY j.nom;
+
+4)
+DELETE FROM Article 
+WHERE id_article
+IN (
+    SELECT id_article 
+    FROM Auteur
+    WHERE id_journaliste=10 
+    AND nom_rubrique='cricket');
+
+5)
+SELECT j.id_journalist, j.nom, j.prenom, COUNT(a.id_article)
+FROM Journaliste j
+JOIN Auteur a ON j.id_journalist = a.id_journaliste
+JOIN Article art ON a.id_article = art.id_article
+WHERE art.nom_rubrique = 'football'
+GROUP BY j.id_journalist
+HAVING COUNT(a.id_article) >= 30;
+----------------------------
+
+1)
+CREATE VIEW articles_football(id, nom_article)
+AS SELECT a.id_article, a.titre FROM Article
+WHERE a.nom_rubrique='football';
+
+2)
+Sans utiliser la vue, avec une sous-requete:
+SELECT DISTINCT id_journaliste 
+FROM Auteur
+WHERE id_article
+IN(
+	SELECT id_article FROM Article 
+	WHERE nom_rubrique='tennis'
+)
+ORDER BY id_journaliste ASC;
+
+En utilisant la vue, avec sous-requete:
+SELECT DISTINCT A.id_journaliste 
+FROM Auteur A 
+WHERE A.id_article IN (
+    SELECT id 
+    FROM articles_football
+) 
+ORDER BY A.id_journaliste;
+
+
+En utilisant la vue, avec une jointure:
+SELECT DISTINCT a.id_journaliste
+FROM Auteur a
+JOIN articles_football AT ON a.id_article=AT.id
+ORDER BY j.id_journaliste ASC;
+
+3)
+a) CREATE TABLE nb_articles_par_rub AS
+	SELECT nom_rubrique, COUNT(id_article)
+	FROM Article
+	GROUP BY nom_rubrique
+
+b) CREATE TRIGGER maj_nb_articles AFTER INSERT ON Article
+   BEGIN
+    UPDATE nb_articles_par_rubrique
+    SET total = (
+        SELECT COUNT(id)
+        FROM Article
+        WHERE nomRubrique = new.nomRubrique
+        GROUP BY nomRubrique
+    )
+    WHERE nomRubrique = new.nomRubrique;
+    END;
+-----------------------------------------------------
+1)
+
